@@ -1,0 +1,149 @@
+Sure! Let’s go line-by-line through the runMyFPS.m file so you understand everything it’s doing. This is a headless launcher for your game that runs three loops—input, logic, and render—in parallel threads using parfeval.
+
+⸻
+
+📄 File: runMyFPS.m
+
+function runMyFPS()
+
+	•	This declares a function named runMyFPS.
+	•	It takes no inputs, and it’s the entry point for launching your game engine in the background.
+
+⸻
+
+
+
+%RUNMYFPS  Head‑less launcher that runs each loop on its own background
+%          worker (parfeval) and prints minimal status to the console.
+%
+%   Stops when the user presses ENTER or when gameState.running == false.
+
+	•	This is the function documentation comment (MATLAB shows this when you type help runMyFPS).
+	•	It explains the function launches the game in background threads and stops when ENTER is pressed or a flag turns false.
+
+⸻
+
+
+
+%% 1) Build all state
+gs = initGameState();
+
+	•	Initializes the game state by calling initGameState().
+	•	gs is likely a struct containing global game variables like player, map, etc.
+
+⸻
+
+
+
+%% 2) Ensure a parallel pool (threads profile)
+pool = gcp("nocreate");
+if isempty(pool)
+    pool = parpool("threads");   %#ok<NASGU>
+end
+
+	•	gcp("nocreate") gets the current parallel pool without creating a new one.
+	•	If none exists, it creates one using the “threads” profile, which runs things in background threads.
+	•	#ok<NASGU> is a hint to MATLAB not to warn about pool being unused.
+
+⸻
+
+
+
+%% 3) Launch background tasks
+fInput  = parfeval(@inputLoop,  0, gs);   % 0 outputs
+fLogic  = parfeval(@logicLoop,  0, gs);
+fRender = parfeval(@renderLoop, 0, gs);   % renderLoop can discard frames
+
+	•	parfeval(func, nOut, input1, ...) runs func in the background.
+	•	Each function (inputLoop, logicLoop, renderLoop) runs in its own thread.
+	•	0 means no return values are expected.
+	•	Each one gets access to the shared game state gs.
+
+⸻
+
+
+
+fprintf("Game running in background threads – press ENTER to stop...\n");
+
+	•	Prints a message to the console so the user knows the game is running.
+
+⸻
+
+
+
+%% 4) Wait for user interrupt or gameState.running flag
+stopRequested = false;
+h = listener(gs,'running','PostSet',@(~,~)checkStop()); %#ok<LNVEN>
+
+	•	Creates a flag stopRequested to track if we should shut down.
+	•	Sets up a listener on the gs.running property so if it’s ever changed (set to false), checkStop() is called.
+
+⸻
+
+
+
+% Non‑blocking keyboard wait
+try
+    pause on
+    while ~stopRequested && gs.running
+        pause(0.2);
+        if ~isempty(get(groot,'CurrentCharacter')) || ~isempty(get(groot,'CurrentKey'))
+            stopRequested = true;
+        end
+    end
+catch
+    % If the user closed MATLAB command window
+end
+
+	•	This is a loop that checks every 0.2 seconds for two things:
+	1.	Whether stopRequested is true.
+	2.	Whether gs.running is still true.
+	•	It also checks if a key was pressed using groot (the graphics root).
+	•	If the command window is closed (causing an error), it’s caught silently.
+
+⸻
+
+
+
+%% 5) Clean shutdown
+cancel([fInput, fLogic, fRender]);
+delete(h);
+
+	•	Cancels all background threads.
+	•	Deletes the property listener on gs.running.
+
+⸻
+
+
+
+fprintf("Shutdown complete.\n");
+
+	•	Confirms that everything was shut down properly.
+
+⸻
+
+
+
+% ----------------------------------------------------------
+function checkStop()
+    % If some part of the game sets gs.running = false, exit
+    if ~gs.running
+        stopRequested = true;
+    end
+end
+
+	•	This is the callback function for the listener.
+	•	If some game logic changes gs.running to false, this sets stopRequested = true, triggering the shutdown.
+
+⸻
+
+🔁 Summary Flow:
+	1.	Initializes game state.
+	2.	Starts parallel pool.
+	3.	Starts input, logic, and render loops in background.
+	4.	Waits for a key press or gs.running to turn false.
+	5.	Cancels all loops and shuts down gracefully.
+
+⸻
+
+Let me know if you want me to walk you through writing your own version or how parfeval vs parfor works.

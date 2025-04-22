@@ -1,0 +1,45 @@
+%INITGAMESTATE  Construct and return the master game‑state structure.
+%
+%   gs = INITGAMESTATE()
+%
+%   Returns a plain (non‑handle) struct, *gs*, that aggregates every
+%   sub‑system required by the Wolfenstein+: Shadow of Doom MATLAB FPS:
+%
+%     • Player           – position, orientation, health, mana, etc.
+%     • MapManager       – 3‑D world grid (H×W×Floors) + elevator/chest coords
+%     • SpriteManager    – array of Sprite structs (pos, typeID, AI brain …)
+%     • KeyManager       – key location/ownership tracking
+%     • InputManager     – latest joystick & button states
+%     • CollisionDetector, RenderEngine, AudioManager, HUDManager,
+%       AssetManager     – stateless or data‑bearing service structs
+%
+%   Timing parameters
+%   -----------------
+%   The struct also embeds three period fields that drive the background
+%   loops:
+%
+%       gs.renderPeriod   (seconds) – target frame cadence   (default 1/60)
+%       gs.logicPeriod    (seconds) – physics / AI cadence  (default 1/30)
+%       gs.inputPeriod    (seconds) – Arduino polling rate  (default 1/100)
+%
+%   Field Overview
+%   --------------
+%     gs.player.position        [x y z] double
+%     gs.mapManager.maps        H×W×D uint8  (tile IDs)
+%     gs.mapManager.elevators   N×3  double  ([x y z] coords)
+%     gs.mapManager.chests      M×3  double
+%     gs.spriteManager.sprites  1×K  struct  (see entities/Sprite.m)
+%     gs.running                logical flag to stop all loops
+%
+%   Example:
+%     gs = initGameState();
+%     disp(gs.player.health)       % -> 100
+%
+%   The returned struct is *passed by reference* to background workers
+%   (parfeval) because it is stored in the calling workspace before the
+%   workers are launched.  Do **not** modify sub‑structs by re‑assignment;
+%   mutate fields directly, e.g. `gs.player.health = gs.player.health-10;`
+%
+%   See also: runMyFPS, inputLoop, logicLoop, renderLoop
+
+function gs = initGameState()
