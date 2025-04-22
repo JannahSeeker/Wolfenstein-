@@ -12,7 +12,8 @@ function [x1,y1,x2,y2,q1,q2] = getPos(nano)
     % threshold
     high = 3;
     low = 2;
-
+ 
+    
     % Set all values = 0
     x1 = 0;
     x2 = 0;

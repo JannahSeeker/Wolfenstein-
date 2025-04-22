@@ -11,5 +11,6 @@ function writeHealth(uno,h_p)
     for i = num_led_on+1 : length(greenPins) % matlab skips the unnecessary checks
         writeDigitalPin(uno, greenPins{i}, 0);
     end
+    
 end
 

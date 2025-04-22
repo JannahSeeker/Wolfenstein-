@@ -8,5 +8,5 @@ function writeKG(uno,g_p,b_p)
     b_val = b_p/100;
     writePWMDutyCycle(uno, redPin, b_val);
     writePWMDutyCycle(uno, bluePin, g_val);
-
+ 
 end
