@@ -14,6 +14,7 @@ player = struct( ...
     'position',    [0, 0, 0], ...    % [x, y,z]
     'angle',       0.0,   ...     % facing direction (radians)
     'health',      100.0, ...     % starting health
+    'maxHealth'    100.0
     'mana',        0.0,   ...     % starting mana
     'hasKey',      false, ...     % are they holding the key?
     'speed',       5.0 ...        % movement units per second
@@ -76,11 +77,7 @@ inputManager = struct( ...
     'deadzone',  0.1 ...
 );
 
-%% 6) CollisionDetector (stateless placeholder)
-collisionDetector = struct();
 
-%% 7) RenderEngine (stateless wrapper)
-renderEngine = struct();
 
 %% 8) AudioManager (stateless)
 audioManager = struct( ...
@@ -95,6 +92,17 @@ assetManager = struct( ...
     'textureIDs',   uint16([]), ...
     'animationMap', int32([]) ...
 );
+
+player         = createPlayer();
+mapManager     = createMapManager();
+keyManager     = createKeyManager();
+spriteManager  = createSpriteManager();
+inputManager   = createInputManager();
+collisionDetector = createCollisionDetector();
+renderEngine   = createRenderEngine();
+audioManager   = createAudioManager();
+hudManager     = createHUDManager();
+assetManager   = createAssetManager();
 
 %% 11) Master GameState Struct
 gameState = struct( ...

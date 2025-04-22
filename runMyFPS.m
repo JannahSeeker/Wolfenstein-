@@ -5,6 +5,12 @@ function runMyFPS()
     %   Stops when the user presses ENTER or when gameState.running == false.
     
         %% 1) Build all state
+
+        uno = arduino('COM3','Uno')
+        nano = arduino('COM4','Uno')
+
+
+
         gs = initGameState();
     
         %% 2) Ensure a parallel pool (threads profile)

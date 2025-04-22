@@ -25,6 +25,9 @@ function inputLoop(gs)
 %   calling workspace (copy‑by‑reference before the workers launch).
 
     % Cache period locally for speed
+    writeHealth(uno,55)
+    writeKeyGhost(uno,keyPwm,ghostPwm)
+    [[x,y],[x,y],q,q]=readValue(nano)
     dt = gs.inputPeriod;
 
     % Determine whether we have an Arduino handle
