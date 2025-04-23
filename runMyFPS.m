@@ -6,11 +6,6 @@ function runMyFPS()
     
         %% 1) Build all state
 
-        uno = arduino('COM3','Uno')
-        nano = arduino('COM4','Uno')
-
-
-
         gs = initGameState();
     
         %% 2) Ensure a parallel pool (threads profile)
@@ -20,9 +15,9 @@ function runMyFPS()
         end
     
         %% 3) Launch background tasks
-        fInput  = parfeval(@inputLoop,  0, gs);   % 0 outputs
-        fLogic  = parfeval(@logicLoop,  0, gs);
-        fRender = parfeval(@renderLoop, 0, gs);   % renderLoop can discard frames
+        fInput  = parfeval(@input2Loop,  0, gs);   % 0 outputs
+        % fLogic  = parfeval(@logicLoop,  0, gs);
+        fRender = parfeval(@render2dLoop, 0, gs);   % renderLoop can discard frames
     
         fprintf("Game running in background threads – press ENTER to stop...\n");
     
