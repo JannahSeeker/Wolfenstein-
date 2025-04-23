@@ -22,7 +22,12 @@ def update_keypress():
     for key in ['w', 'a', 's', 'd']:
         if key in data:
             key_state[key] = bool(data[key])
+    print(data)
+    print(key_state)
+    print(jsonify(key_state))
+    print("-----")
     return jsonify({"status": "updated", "key_state": key_state})
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5555)

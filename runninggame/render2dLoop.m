@@ -54,38 +54,23 @@ disp('Render loop (graphical) ran');
         try
             % Send GET request to the joystick server
             keyStates = webread('http://localhost:5555/keypress');
-
+            disp(keyStates);
+            disp(gs.player.position);
             % Read booleans for WASD keys
             w = keyStates.w;
             a = keyStates.a;
             s = keyStates.s;
             d = keyStates.d;
-
+            % disp(w,a,s,d);
             % Current player position
             pos = gs.player.position;
             x = pos(1); y = pos(2); z = pos(3);
 
             % Apply movement based on key states
-            if w && x > 1
-                x = x - 1;
-            end
-            if s && x < gs.mapManager.height
+            if w
                 x = x + 1;
             end
-            if a
-                if y > 1
-                    y = y - 1;
-                else
-                    gs.player.facing = mod(gs.player.facing - 1, 4);  % Turn left
-                end
-            end
-            if d
-                if y < gs.mapManager.width
-                    y = y + 1;
-                else
-                    gs.player.facing = mod(gs.player.facing + 1, 4);  % Turn right
-                end
-            end
+
 
             % Update position
             gs.player.position = [x, y, z];
